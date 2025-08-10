@@ -137,6 +137,11 @@ class MainActivity : AppCompatActivity() {
                                 val url = barcode.url?.url
                                 showUrlDetails(url)
                             }
+
+                            Barcode.TYPE_TEXT -> {
+                                val text = barcode.displayValue
+                                showTxtDetails(text)
+                            }
                         }
                     }
                 }
@@ -186,6 +191,22 @@ class MainActivity : AppCompatActivity() {
             connectButton.setOnClickListener {
                 val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
                 startActivity(browserIntent)
+                resetUI()
+            }
+        }
+    }
+
+    private fun showTxtDetails(text: String?) {
+        runOnUiThread {
+            ssidText.text = "$text"
+            passwordText.visibility = View.GONE
+            encryptionText.visibility = View.GONE
+
+            connectButton.text = "OK"
+            connectButton.visibility = if (!text.isNullOrBlank()) View.VISIBLE else View.GONE
+
+            connectButton.setOnClickListener {
+                Toast.makeText(this, "Text scanned: $text", Toast.LENGTH_LONG).show()
                 resetUI()
             }
         }
