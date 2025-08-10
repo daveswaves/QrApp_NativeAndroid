@@ -7,8 +7,8 @@
     <application
         android:allowBackup="true"
         
-        android:icon="@android:drawable/ic_menu_search"
-        android:roundIcon="@android:drawable/ic_menu_search"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="QrApp"
         
         android:supportsRtl="true"
@@ -21,3 +21,8 @@
         </activity>
     </application>
 </manifest>
+<!--
+# === Use if no PNG icons ===
+android:icon="@android:drawable/ic_menu_search"
+android:roundIcon="@android:drawable/ic_menu_search"
+-->

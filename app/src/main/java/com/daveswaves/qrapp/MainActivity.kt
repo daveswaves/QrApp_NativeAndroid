@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var scanButton: Button
     private lateinit var makeButton: Button
-    private lateinit var qrPreview: ImageView
+    // private lateinit var qrPreview: ImageView
     private lateinit var ssidText: TextView
     private lateinit var passwordText: TextView
     private lateinit var encryptionText: TextView
@@ -69,13 +69,13 @@ class MainActivity : AppCompatActivity() {
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
 
-        connectButton.setOnClickListener {
-            if (scannedSSID != null && scannedPassword != null) {
-                connectToWifi(scannedSSID!!, scannedPassword!!, scannedEncryption)
-            } else {
-                Toast.makeText(this, "No Wi-Fi details found", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // connectButton.setOnClickListener {
+        //     if (scannedSSID != null && scannedPassword != null) {
+        //         connectToWifi(scannedSSID!!, scannedPassword!!, scannedEncryption)
+        //     } else {
+        //         Toast.makeText(this, "No Wi-Fi details found", Toast.LENGTH_SHORT).show()
+        //     }
+        // }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
@@ -121,15 +121,22 @@ class MainActivity : AppCompatActivity() {
             scanner.process(image)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
-                        if (barcode.valueType == Barcode.TYPE_WIFI) {
-                            scannedSSID = barcode.wifi?.ssid
-                            scannedPassword = barcode.wifi?.password
-                            scannedEncryption = when (barcode.wifi?.encryptionType) {
-                                Barcode.WiFi.TYPE_WPA -> "WPA"
-                                Barcode.WiFi.TYPE_WEP -> "WEP"
-                                else -> "Open"
+                        when (barcode.valueType) {
+                            Barcode.TYPE_WIFI -> {
+                                scannedSSID = barcode.wifi?.ssid
+                                scannedPassword = barcode.wifi?.password
+                                scannedEncryption = when (barcode.wifi?.encryptionType) {
+                                    Barcode.WiFi.TYPE_WPA -> "WPA"
+                                    Barcode.WiFi.TYPE_WEP -> "WEP"
+                                    else -> "Open"
+                                }
+                                showWifiDetails()
                             }
-                            updateUIWithWifiDetails()
+
+                            Barcode.TYPE_URL -> {
+                                val url = barcode.url?.url
+                                showUrlDetails(url)
+                            }
                         }
                     }
                 }
@@ -139,18 +146,48 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateUIWithWifiDetails() {
+    private fun showWifiDetails() {
         runOnUiThread {
+            // Reset first
+            passwordText.visibility = View.VISIBLE
+            encryptionText.visibility = View.VISIBLE
+            
             ssidText.text = "SSID: $scannedSSID"
             passwordText.text = "Password: $scannedPassword"
             encryptionText.text = "Encryption: $scannedEncryption"
 
-            // Show the button only when all fields are non-empty
-            val allFieldsPresent = !scannedSSID.isNullOrBlank()
+            ssidText.visibility = View.VISIBLE
+            passwordText.visibility = View.VISIBLE
+            encryptionText.visibility = View.VISIBLE
+
+            connectButton.text = "Tap to connect"
+            connectButton.visibility = if (!scannedSSID.isNullOrBlank()
                 && !scannedPassword.isNullOrBlank()
                 && !scannedEncryption.isNullOrBlank()
+            ) View.VISIBLE else View.GONE
 
-            connectButton.visibility = if (allFieldsPresent) View.VISIBLE else View.GONE
+            connectButton.setOnClickListener {
+                connectToWifi(scannedSSID!!, scannedPassword!!, scannedEncryption)
+                resetUI()
+            }
+        }
+    }
+
+    private fun showUrlDetails(url: String?) {
+        runOnUiThread {
+            passwordText.visibility = View.GONE
+            encryptionText.visibility = View.GONE
+            
+            ssidText.text = "URL: $url"
+
+            connectButton.text = "Open Link"
+            connectButton.visibility = if (!url.isNullOrBlank()) View.VISIBLE else View.GONE
+
+            connectButton.setOnClickListener {
+                val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                startActivity(browserIntent)
+                resetUI()
+            }
         }
     }
 
@@ -172,6 +209,23 @@ class MainActivity : AppCompatActivity() {
             wifiManager.reconnect()
         }
     }
+
+    private fun resetUI() {
+        scannedSSID = null
+        scannedPassword = null
+        scannedEncryption = null
+
+        ssidText.text = ""
+        passwordText.text = ""
+        encryptionText.text = ""
+
+        connectButton.visibility = View.GONE
+
+        // Ensure these are visible again for Wi-Fi scans
+        passwordText.visibility = View.VISIBLE
+        encryptionText.visibility = View.VISIBLE
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
