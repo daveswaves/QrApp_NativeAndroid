@@ -1,0 +1,48 @@
+app/build.gradle.kts
+app/src/main/AndroidManifest.xml
+app/src/main/java/com/daveswaves/qrapp/MainActivity.kt
+app/src/main/res/layout/activity_main.xml
+app/src/main/res/mipmap-hdpi/ic_launcher.png
+app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+app/src/main/res/mipmap-mdpi/ic_launcher.png
+app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+app/src/main/res/mipmap-xhdpi/ic_launcher.png
+app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+build.gradle.kts
+gradle.properties
+settings.gradle.kts
+
+#################################
+
+alias adbon='adb devices'
+alias adbip='adb connect 192.168.1.153:5555'
+alias qrapp='cd ~/android_apps/qr_app_files/QrApp'
+alias adcpl='gradle clean assembleDebug'
+alias apkup='adb install -r app/build/outputs/apk/debug/app-debug.apk'
+
+alias reset='source ~/.bashrc'
+
+alias mkapp='./makeapp.sh'
+
+#################################
+
+adbon:  'adb devices'
+qrapp:  'cd ~/android_apps/qr_app_files/QrApp'
+adcomp: 'gradle clean assembleDebug'
+apkup:  'adb install -r app/build/outputs/apk/debug/app-debug.apk'
+
+#################################
+
+Deploy/debug Android apps to phone over Wi-Fi (no USB).
+
+Assuming 'adb devices' is all working, Get the phone’s IP address:
+Settings > About phone > Status information: 192.168.1.153
+
+adb tcpip 5555
+
+# Disconnect USB and connect over Wi-Fi:
+adb connect 192.168.1.153:5555
