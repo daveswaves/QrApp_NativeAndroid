@@ -49,4 +49,5 @@ adb connect 192.168.1.153:5555
 
 #################################
 
+https://developer.android.com/design/ui/mobile/guides/layout-and-content/layout-basics
 https://www.geeksforgeeks.org/android/android-tutorial
