@@ -1,0 +1,26 @@
+* Hide 'TAP TO CONNECT' button. Only display when WiFi code scanned.
+
+* Set orientation to portrait.
+
+* Make larger.
+
+#################################
+
+adusb:  'adb devices'
+qrapp:  'cd ~/android_apps/qr_app_files/QrApp'
+adcomp: 'gradle clean assembleDebug'
+apkup:  'adb install -r app/build/outputs/apk/debug/app-debug.apk'
+
+#################################
+
+Deploy/debug Android apps to phone over Wi-Fi (no USB).
+
+Assuming 'adb devices' is all working, Get the phone’s IP address:
+Settings > About phone > Status information: 192.168.1.153
+
+adb tcpip 5555
+
+# Disconnect USB and connect over Wi-Fi:
+adb connect 192.168.1.153:5555
+
+

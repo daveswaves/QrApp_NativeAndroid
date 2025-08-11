@@ -51,7 +51,23 @@ MyApp/
  │    ├── src/main/
  │    │         ├── AndroidManifest.xml
  │    │         ├── java/com/example/myapp/MainActivity.kt
- │    │         └── res/layout/activity_main.xml
+ │    │         └── res/
+ │    │              ├── layout/activity_main.xml
+ │    │              ├── mipmap-hdpi/
+ │    │              │       ├── ic_launcher.png (48 px)
+ │    │              │       └── ic_launcher_round.png
+ │    │              ├── mipmap-mdpi/
+ │    │              │       ├── ic_launcher.png (72 px)
+ │    │              │       └── ic_launcher_round.png
+ │    │              ├── mipmap-xhdpi/
+ │    │              │       ├── ic_launcher.png (96 px)
+ │    │              │       └── ic_launcher_round.png
+ │    │              ├── mipmap-xxhdpi/
+ │    │              │       ├── ic_launcher.png (144 px)
+ │    │              │       └── ic_launcher_round.png
+ │    │              └── mipmap-xxxhdpi/
+ │    │                      ├── ic_launcher.png (192 px)
+ │    │                      └── ic_launcher_round.png
  │    └── build.gradle.kts
  ├── build.gradle.kts
  ├── gradle.properties
@@ -234,6 +250,17 @@ Settings > Developer options
 # Turn on 'USB debugging'
 ```
 
+### Deploy/debug Android apps to phone over Wi-Fi (no USB).
+```sh
+Assuming 'adb devices' is all working, Get the phone’s IP address:
+Settings > About phone > Status information: 192.168.1.153
+
+adb tcpip 5555
+
+# Disconnect USB and connect over Wi-Fi:
+adb connect 192.168.1.153:5555
+```
+
 ### NOTES
 
 After PC boot, running `$ adb devices` will show something like:
@@ -247,4 +274,13 @@ You should now see something like the following (assuming phone has been connect
 ```sh
 List of devices attached
 R8YW501SJTE	device
+```
+
+Useful aliases to have in `.bash_aliases`
+```sh
+alias adusb='adb devices'
+alias adbip='adb connect 192.168.1.153:5555'
+alias qrapp='cd ~/android_apps/qr_app_files/QrApp'
+alias adcpl='gradle clean assembleDebug'
+alias apkup='adb install -r app/build/outputs/apk/debug/app-debug.apk'
 ```

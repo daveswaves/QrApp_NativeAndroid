@@ -46,3 +46,7 @@ adb tcpip 5555
 
 # Disconnect USB and connect over Wi-Fi:
 adb connect 192.168.1.153:5555
+
+#################################
+
+https://www.geeksforgeeks.org/android/android-tutorial
