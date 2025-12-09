@@ -305,7 +305,9 @@ class MainActivity : AppCompatActivity() {
         popup.menu.add("WiFi QR (Home)")
         popup.menu.add("WiFi QR (Wilmer)")
         popup.menu.add("URL QR")
+        popup.menu.add("URL QR (The Guardian)")
         popup.menu.add("Text QR")
+        popup.menu.add("Text QR (Hello)")
 
         popup.setOnMenuItemClickListener { item ->
             when (item.title.toString()) {
@@ -321,8 +323,14 @@ class MainActivity : AppCompatActivity() {
                 "URL QR" -> {
                     showInputFields("url")
                 }
+                "URL QR (The Guardian)" -> {
+                    showInputFields("url", "guardian")
+                }
                 "Text QR" -> {
                     showInputFields("text")
+                }
+                "Text QR (Hello)" -> {
+                    showInputFields("text", "hello")
                 }
             }
             true
@@ -381,9 +389,15 @@ class MainActivity : AppCompatActivity() {
                 inputC.setText("WPA")
             }
             else if ("text" == type) {
+                if (opt == "hello") {
+                    inputC.setText("Hello")
+                }
                 inputC.setHint("Enter Text")
             }
             else if ("url" == type) {
+                if (opt == "guardian") {
+                    inputC.setText("https://www.theguardian.com/uk")
+                }
                 inputC.setHint("Enter URL")
             }
         }
@@ -422,6 +436,21 @@ class MainActivity : AppCompatActivity() {
             generatedQrImage.setImageBitmap(bmp)
         }
     }
+
+    // automatically gain focus and show keyboard
+    private fun focusEditText(editText: EditText) {
+        editText.requestFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+    }
+
+    // focusEditText(inputC)
+
+    // TIP: focus when view becomes visible
+    /* inputC.visibility = View.VISIBLE
+    inputC.post {
+        focusEditText(inputC)
+    } */
 
     private fun connectToWifi(ssid: String, password: String, _encryption: String?) {
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
