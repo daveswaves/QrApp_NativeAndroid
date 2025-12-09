@@ -65,8 +65,36 @@
         android:layout_marginTop="12dp"
         android:background="#000000" />
 
+    <!-- QR Code Preview -->
+    <ImageView
+        android:id="@+id/generatedQrImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintTop_toBottomOf="@id/buttonRow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        android:adjustViewBounds="true"
+        android:background="#000000"
+        android:scaleType="fitCenter" />
+
+    <!-- Spacer -->
+    <View
+        android:id="@+id/spacer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintWidth_percent="0.9"
+        app:layout_constraintDimensionRatio="1:1.02"
+        app:layout_constraintTop_toBottomOf="@id/buttonRow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible" />
+
     <!-- Scan Hint -->
-    <TextView
+    <!-- <TextView
         android:id="@+id/scanHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,42 +104,101 @@
         app:layout_constraintTop_toBottomOf="@id/previewView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp" /> -->
 
+    <!-- 3 TextViews display data when WiFi QR scanned -->
     <!-- SSID -->
     <TextView
-        android:id="@+id/ssidText"
+        android:id="@+id/textSsid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/scanHint"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />
 
     <!-- Password -->
     <TextView
-        android:id="@+id/passwordText"
+        android:id="@+id/textPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/ssidText"
+        app:layout_constraintTop_toBottomOf="@id/textSsid"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Encryption -->
     <TextView
-        android:id="@+id/encryptionText"
+        android:id="@+id/textEncryption"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/passwordText"
+        app:layout_constraintTop_toBottomOf="@id/textPassword"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+    <!-- END -->
+
+    <!-- 3 text input fields display to generate QR-Code -->
+    <!-- Input SSID (inputSsid) -->
+    <EditText
+        android:id="@+id/inputA"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter SSID"
+        android:textColor="#000000"
+        android:textColorHint="#AAAAAA"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/spacer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp" />
+
+    <!-- Input Password (inputPassword) -->
+    <EditText
+        android:id="@+id/inputB"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Enter Password"
+        android:textColor="#000000"
+        android:textColorHint="#AAAAAA"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/inputA"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="20dp" />
+        <!-- android:inputType="textPassword" -->
+
+    <!-- Input Encryption (inputC) -->
+    <EditText
+        android:id="@+id/inputC"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:textColorHint="#AAAAAA"
+        android:background="@android:drawable/edit_text"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/inputB"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="20dp" />
+        <!-- android:hint="Enter Encryption (WPA/WPA2)" -->
+
 
     <!-- Connect Button -->
     <Button
@@ -125,7 +212,24 @@
         android:backgroundTint="#2196F3"
         android:textColor="#FFFFFF"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/encryptionText"
+        app:layout_constraintTop_toBottomOf="@id/textEncryption"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp" />
+
+    <!-- Generate QR Button -->
+    <Button
+        android:id="@+id/generateQrButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Generate QR"
+        android:textSize="20sp"
+        android:minWidth="300dp"
+        android:minHeight="76dp"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/inputC"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="12dp" />

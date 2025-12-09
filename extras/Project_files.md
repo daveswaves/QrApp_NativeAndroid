@@ -207,6 +207,11 @@ adb start-server
 # "Allow USB debugging?" message should appear on phone.
 # Tick Always allow from this computer
 # Tap Allow
+
+# *** If phone restart occurs, Wireless debugging (Developer options)
+# *** will turn itself off. Turn back on. Note that it will keep assigning dynamic port number.
+# *** Select 'Wireless debugging' to view IP address and port.
+# *** Run 'adb tcpip 5555' to fix port to 5555.
 ```
 
 ### PC operations:

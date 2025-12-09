@@ -1,0 +1,54 @@
+
+App Info
+========
+
+/app/
+   src/
+      java/com/daveswaves/qrapp/
+         MainActivity.kt
+      res/
+         layout/
+            activity_main.xml
+         mipmap-hdpi/
+            ic_launcher_round.png
+            ic_launcher.png
+         mipmap-mdpi/
+            ic_launcher_round.png
+            ic_launcher.png
+         mipmap-xhdpi/
+            ic_launcher_round.png
+            ic_launcher.png
+         mipmap-xxhdpi/
+            ic_launcher_round.png
+            ic_launcher.png
+         mipmap-xxxhdpi/
+            ic_launcher_round.png
+            ic_launcher.png
+      AndroidManifest.xml
+   build.gradle.kts
+build.gradle.kts
+gradle.properties
+settings.gradle.kts
+
+
+Common Imports:
+
+   android.widget.
+      Button
+      EditText
+      ImageView
+      TextView
+      Toast
+      PopupMenu
+
+   android.view.
+      Gravity
+      View
+
+   android.graphics.
+      Bitmap
+      Color
+
+   android.net.wifi.
+      WifiConfiguration
+      WifiManager
