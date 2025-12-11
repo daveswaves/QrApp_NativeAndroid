@@ -1,10 +1,12 @@
+// cd ~/android_apps/qr_app_files/QrApp/
 package com.daveswaves.qrapp
 
 import android.graphics.Bitmap
 import android.graphics.Color
 
 import android.view.View
-import android.view.Gravity // NEW_CODE: 2025-12-08
+import android.view.Gravity
+import android.view.inputmethod.InputMethodManager
 
 import android.Manifest
 
@@ -19,11 +21,11 @@ import android.os.Bundle
 
 import android.provider.Settings
 
-import android.widget.PopupMenu // NEW_CODE: 2025-12-08
+import android.widget.PopupMenu
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.EditText // NEW_CODE: 2025-12-08
+import android.widget.EditText
 import android.widget.Toast
 
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,28 +51,27 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
-
+    // variables that will be initialized later
     private lateinit var cameraExecutor: ExecutorService
     private lateinit var scanButton: Button
     private lateinit var makeButton: Button
-    // private lateinit var qrPreview: ImageView
     private lateinit var textSsid: TextView
     private lateinit var textPassword: TextView
     private lateinit var textEncryption: TextView
-
+    //-----------------------
     private lateinit var inputA: EditText
     private lateinit var inputB: EditText
     private lateinit var inputC: EditText
-
+    //-----------------------
     private lateinit var connectButton: Button
     private lateinit var generateQrButton: Button
     private lateinit var previewView: PreviewView
     private lateinit var generatedQrImage: ImageView
-
+    //-----------------------
     private var scannedSSID: String? = null
     private var scannedPassword: String? = null
     private var scannedEncryption: String? = null
-
+    //-----------------------
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
@@ -86,74 +87,57 @@ class MainActivity : AppCompatActivity() {
 
         scanButton = findViewById(R.id.scanButton)
         makeButton = findViewById(R.id.makeButton)
-
+        //-----------------------
         previewView = findViewById(R.id.previewView)
-        
+        //-----------------------
         textSsid = findViewById(R.id.textSsid)
         textPassword = findViewById(R.id.textPassword)
         textEncryption = findViewById(R.id.textEncryption)
-
-        // NEW_CODE: 2025-12-08
+        //-----------------------
         inputA = findViewById(R.id.inputA)
         inputB = findViewById(R.id.inputB)
         inputC = findViewById(R.id.inputC)
-
+        //-----------------------
         connectButton = findViewById(R.id.connectButton)
         generateQrButton = findViewById(R.id.generateQrButton)
-
+        //-----------------------
         generatedQrImage = findViewById(R.id.generatedQrImage)
 
         scanButton.setOnClickListener {
-            // Hide input EditTexts
-            inputA.visibility = View.GONE
-            inputB.visibility = View.GONE
-            inputC.visibility = View.GONE
-
-            generateQrButton.visibility = View.GONE
-
-            previewView.visibility = View.VISIBLE
-            generatedQrImage.visibility = View.GONE
+            visible(View.GONE, inputA, inputB, inputC, connectButton, textSsid, textPassword, textEncryption, generateQrButton, generatedQrImage)
+            visible(View.VISIBLE, previewView)
             
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
-        // NEW_CODE: 2025-12-07
         makeButton.setOnClickListener { view ->
-            previewView.visibility = View.GONE
-            generatedQrImage.visibility = View.VISIBLE
+            visible(View.GONE, previewView, generatedQrImage, textSsid, textPassword, textEncryption, connectButton)
             
             showMakeMenu(view)
         }
 
         generateQrButton.setOnClickListener {
-            val hintText = inputC.hint?.toString()
+            val textC = inputC.text.toString()
+            // Toast.makeText(this, "textC: $textC", Toast.LENGTH_SHORT).show()
 
-            val content = when (hintText) {
+            val hintText = inputC.hint?.toString()
+            when (hintText) {
                 "Enter Text" -> {
-                    val text = inputC.text.toString()
-                    if (text.isEmpty()) return@setOnClickListener
-                    QrContent.Text(text)
+                    generateQrCode(textC)
                 }
                 "Enter URL" -> {
-                    val url = inputC.text.toString()
-                    if (url.isEmpty()) return@setOnClickListener
-                    QrContent.Url(url)
+                    generateQrCode("URL:$textC")
                 }
-                else -> {
-                    val ssid = inputA.text.toString()
-                    val password = inputB.text.toString()
-                    val encryption = inputC.text.toString()
-                    if (ssid.isEmpty() || password.isEmpty()) return@setOnClickListener
-                    QrContent.Wifi(ssid, password, encryption)
+                "Enter Encryption (WPA/WPA2)" -> {
+                    val textA = inputA.text.toString()
+                    val textB = inputB.text.toString()
+                    
+                    generateQrCode("WIFI:T:$textA;S:$textB;P:$textC;;")
                 }
             }
 
-            generateQrCode(content)
+            visible(View.GONE, generateQrButton, inputA, inputB, inputC)
 
-            // Hide input fields and button
-            generateQrButton.visibility = View.GONE
-            inputA.visibility = View.GONE
-            inputB.visibility = View.GONE
-            inputC.visibility = View.GONE
+            hideKeyboard(currentFocus ?: it)
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -232,28 +216,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun showWifiDetails() {
         runOnUiThread {
-            // Reset first
-            // passwordText.visibility = View.VISIBLE
-            // encryptionText.visibility = View.VISIBLE
+            visible(View.GONE, previewView, inputA, inputB, inputC)
+            visible(View.VISIBLE, textSsid, textPassword, textEncryption, connectButton)
             
             textSsid.text = "SSID: $scannedSSID"
             textPassword.text = "Password: $scannedPassword"
             textEncryption.text = "Encryption: $scannedEncryption"
 
-            // Hide input EditTexts
-            inputA.visibility = View.GONE
-            inputB.visibility = View.GONE
-            inputC.visibility = View.GONE
-
-            textSsid.visibility = View.VISIBLE
-            textPassword.visibility = View.VISIBLE
-            textEncryption.visibility = View.VISIBLE
-
             connectButton.text = "Tap to connect"
-            connectButton.visibility = if (!scannedSSID.isNullOrBlank()
-                && !scannedPassword.isNullOrBlank()
-                && !scannedEncryption.isNullOrBlank()
-            ) View.VISIBLE else View.GONE
 
             connectButton.setOnClickListener {
                 connectToWifi(scannedSSID!!, scannedPassword!!, scannedEncryption)
@@ -264,15 +234,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun showUrlDetails(url: String?) {
         runOnUiThread {
-            textPassword.visibility = View.GONE
-            textEncryption.visibility = View.GONE
+            visible(View.GONE, previewView, textPassword, textEncryption)
+            visible(View.VISIBLE, connectButton, textSsid)
             
             textSsid.text = "URL: $url"
 
             connectButton.text = "Open Link"
-            connectButton.visibility = if (!url.isNullOrBlank()) View.VISIBLE else View.GONE
 
             connectButton.setOnClickListener {
+                Toast.makeText(this, "URL scanned: $url", Toast.LENGTH_LONG).show()
                 val browserIntent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
                 startActivity(browserIntent)
                 resetUI()
@@ -282,12 +252,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun showTxtDetails(text: String?) {
         runOnUiThread {
+            visible(View.GONE, previewView, textPassword, textEncryption)
+            visible(View.VISIBLE, connectButton, textSsid)
+
             textSsid.text = "$text"
-            textPassword.visibility = View.GONE
-            textEncryption.visibility = View.GONE
 
             connectButton.text = "OK"
-            connectButton.visibility = if (!text.isNullOrBlank()) View.VISIBLE else View.GONE
 
             connectButton.setOnClickListener {
                 Toast.makeText(this, "Text scanned: $text", Toast.LENGTH_LONG).show()
@@ -350,24 +320,13 @@ class MainActivity : AppCompatActivity() {
     // Display WiFi text fields
     private fun showInputFields(type: String, opt: String? = null) {
         runOnUiThread {
-            // Hide scan results (SSID / Password / Encryption)
-            textSsid.visibility = View.GONE
-            textPassword.visibility = View.GONE
-            textEncryption.visibility = View.GONE
-            connectButton.visibility = View.GONE
+            visible(View.GONE, textSsid, textPassword, textEncryption, connectButton, inputA, inputB)
+            visible(View.VISIBLE, inputC, generateQrButton)
 
             // Show input EditTexts
             if ("wifi" == type) {
-                inputA.visibility = View.VISIBLE
-                inputB.visibility = View.VISIBLE
-
-                // Clear old text
-                // inputA.text.clear()
-                // inputB.text.clear()
+                visible(View.VISIBLE, inputA, inputB)
             }
-            
-            inputC.visibility = View.VISIBLE
-            generateQrButton.visibility = View.VISIBLE
 
             // Clear old text
             inputA.text.clear()
@@ -384,6 +343,9 @@ class MainActivity : AppCompatActivity() {
                     inputA.setText("Wilmer WiFi")
                     inputB.setText("Hol3Farm!")
                 }
+                else {
+                    focusEditText(inputA)
+                }
 
                 inputC.setHint("Enter Encryption (WPA/WPA2)")
                 inputC.setText("WPA")
@@ -392,33 +354,26 @@ class MainActivity : AppCompatActivity() {
                 if (opt == "hello") {
                     inputC.setText("Hello")
                 }
+                else {
+                    focusEditText(inputC)
+                }
                 inputC.setHint("Enter Text")
             }
             else if ("url" == type) {
                 if (opt == "guardian") {
                     inputC.setText("https://www.theguardian.com/uk")
                 }
+                else {
+                    focusEditText(inputC)
+                }
                 inputC.setHint("Enter URL")
             }
         }
     }
 
-
-    sealed class QrContent {
-        data class Wifi(val ssid: String, val password: String, val encryption: String) : QrContent()
-        data class Url(val url: String) : QrContent()
-        data class Text(val text: String) : QrContent()
-    }
-
-    private fun generateQrCode(content: QrContent) {
-        val text = when (content) {
-            is QrContent.Wifi -> "WIFI:T:${content.encryption};S:${content.ssid};P:${content.password};;"
-            is QrContent.Url -> "URL:${content.url}"
-            is QrContent.Text -> content.text
-        }
-
+    private fun generateQrCode(data: String) {
         val writer = com.google.zxing.qrcode.QRCodeWriter()
-        val bitMatrix = writer.encode(text, com.google.zxing.BarcodeFormat.QR_CODE, 800, 800)
+        val bitMatrix = writer.encode(data, com.google.zxing.BarcodeFormat.QR_CODE, 800, 800)
 
         val width = bitMatrix.width
         val height = bitMatrix.height
@@ -431,26 +386,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         runOnUiThread {
-            previewView.visibility = View.GONE   // hide camera preview
-            generatedQrImage.visibility = View.VISIBLE
+            visible(View.GONE, previewView)
+            visible(View.VISIBLE, generatedQrImage)
+            
             generatedQrImage.setImageBitmap(bmp)
         }
     }
 
-    // automatically gain focus and show keyboard
+    // Automatically gain focus and display soft keyboard
     private fun focusEditText(editText: EditText) {
         editText.requestFocus()
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
+
+        editText.post {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+            imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED)
+        }
     }
 
-    // focusEditText(inputC)
-
-    // TIP: focus when view becomes visible
-    /* inputC.visibility = View.VISIBLE
-    inputC.post {
-        focusEditText(inputC)
-    } */
+    // Automatically hide soft keyboard
+    private fun hideKeyboard(view: View) {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+        view.clearFocus()
+    }
 
     private fun connectToWifi(ssid: String, password: String, _encryption: String?) {
         val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
@@ -480,11 +439,12 @@ class MainActivity : AppCompatActivity() {
         textPassword.text = ""
         textEncryption.text = ""
 
-        connectButton.visibility = View.GONE
+        visible(View.GONE, connectButton)
+        visible(View.VISIBLE, textPassword, textEncryption)
+    }
 
-        // Ensure these are visible again for Wi-Fi scans
-        textPassword.visibility = View.VISIBLE
-        textEncryption.visibility = View.VISIBLE
+    private fun visible(visibility: Int, vararg views: View) {
+        views.forEach { it.visibility = visibility }
     }
 
     override fun onDestroy() {

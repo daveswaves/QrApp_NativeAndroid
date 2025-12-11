@@ -91,7 +91,8 @@
         app:layout_constraintTop_toBottomOf="@id/buttonRow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="invisible" />
+        android:visibility="gone" />
+        <!-- android:visibility="invisible" -->
 
     <!-- Scan Hint -->
     <!-- <TextView
@@ -206,6 +207,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tap to connect"
+        android:textAllCaps="false"
         android:textSize="20sp"
         android:minWidth="300dp"
         android:minHeight="76dp"
@@ -223,6 +225,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Generate QR"
+        android:textAllCaps="false"
         android:textSize="20sp"
         android:minWidth="300dp"
         android:minHeight="76dp"
