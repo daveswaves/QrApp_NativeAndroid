@@ -2,34 +2,34 @@
 App Info
 ========
 
-/app/
-   src/
-      java/com/daveswaves/qrapp/
-         MainActivity.kt
-      res/
-         layout/
-            activity_main.xml
-         mipmap-hdpi/
-            ic_launcher_round.png
-            ic_launcher.png
-         mipmap-mdpi/
-            ic_launcher_round.png
-            ic_launcher.png
-         mipmap-xhdpi/
-            ic_launcher_round.png
-            ic_launcher.png
-         mipmap-xxhdpi/
-            ic_launcher_round.png
-            ic_launcher.png
-         mipmap-xxxhdpi/
-            ic_launcher_round.png
-            ic_launcher.png
-      AndroidManifest.xml
-   build.gradle.kts
+/app/src/main/java/com/daveswaves/qrapp/MainActivity.kt
+
+/app/src/main/res/layout/activity_main.xml
+
+/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+/app/src/main/res/mipmap-hdpi/ic_launcher.png
+
+/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+/app/src/main/res/mipmap-mdpi/ic_launcher.png
+
+/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+
+/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+
+/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+/app/src/main/AndroidManifest.xml
+
+/app/build.gradle.kts
+
 build.gradle.kts
 gradle.properties
 settings.gradle.kts
 
+# # # # # #
 
 Common Imports:
 
